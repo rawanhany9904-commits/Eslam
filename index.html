@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eslam</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Lemonada:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* 🌟 خلفية الصفحة الكاملة الفراغ الكبير الممتد */
+    body {
+      font-family: 'Cairo', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      /* مزيج التدرج الفاتح مع صورة اللوحة الزيتية بشفافية أنيقة */
+      background: linear-gradient(180deg, rgba(237, 245, 255, 0.85) 0%, rgba(247, 249, 252, 0.85) 50%, rgba(255, 247, 240, 0.85) 100%),
+                  url('starry_bg.jpg') center/cover no-repeat fixed;
+      overflow-x: hidden;
+      padding: 20px;
+      position: relative;
+    }
+
+    /* النجوم والنقاط المتناثرة في الفراغ الكبير */
+    .stars-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      background-image: 
+        radial-gradient(circle, #ff8c42 2.5px, transparent 2.5px),
+        radial-gradient(circle, #2b6cb0 2.5px, transparent 2.5px),
+        radial-gradient(circle, #f6ad55 3px, transparent 3px),
+        radial-gradient(circle, #3182ce 2.5px, transparent 2.5px);
+      background-size: 180px 180px, 240px 240px, 200px 200px, 260px 260px;
+      background-position: 20px 30px, 130px 80px, 70px 150px, 190px 220px;
+      opacity: 0.7;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 820px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      perspective: 1200px;
+      z-index: 1;
+    }
+
+    /* المظروف البرتقالي المغلق */
+    .envelope-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      height: 310px;
+      background-color: #ff9e3b;
+      border-radius: 18px;
+      box-shadow: 0 15px 35px rgba(255, 140, 0, 0.25);
+      cursor: pointer;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .envelope-wrapper:hover {
+      transform: translateY(-6px) scale(1.02);
+    }
+
+    .envelope-wrapper.hide {
+      opacity: 0;
+      transform: scale(0.85) translateY(-40px);
+      pointer-events: none;
+      position: absolute;
+    }
+
+    .envelope-flap-top {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 240px solid transparent;
+      border-right: 240px solid transparent;
+      border-top: 160px solid #f28b24;
+      transform-origin: top;
+      z-index: 3;
+      filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.1));
+    }
+
+    .envelope-pocket {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .envelope-pocket::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 240px solid #ff8f24;
+      border-bottom: 155px solid #ff8f24;
+      border-top: 155px solid transparent;
+      border-right: 240px solid transparent;
+    }
+
+    .envelope-pocket::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 0;
+      height: 0;
+      border-right: 240px solid #ff8f24;
+      border-bottom: 155px solid #ff8f24;
+      border-top: 155px solid transparent;
+      border-left: 240px solid transparent;
+    }
+
+    .wax-seal {
+      position: absolute;
+      z-index: 4;
+      width: 95px;
+      height: 95px;
+      background: #ffffff;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+      border: 3.5px solid #1a569d;
+      transition: transform 0.3s ease;
+    }
+
+    .envelope-wrapper:hover .wax-seal {
+      transform: scale(1.08);
+    }
+
+    .seal-text {
+      font-family: 'Lemonada', cursive;
+      color: #1a569d;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    /* 💌 كارت الجواب المفتوح (الإطار الأبيض الأنيق حول الرسالة) */
+    .letter-card {
+      width: 100%;
+      max-width: 780px;
+      border-radius: 26px;
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.1);
+      padding: 16px;
+      display: none;
+      opacity: 0;
+      transform: translateY(30px) scale(0.96);
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border: 1px solid #ffffff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .letter-card.show {
+      display: block;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .card-content-layout {
+      display: flex;
+      border-radius: 20px;
+      overflow: hidden;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      min-height: 280px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* الجزء الداخلي الخاص بالمسدج (أبيض هادئ ونظيف ومريح للعين) */
+    .text-side {
+      flex: 1;
+      padding: 35px 30px;
+      position: relative;
+      background-color: #fafcfe;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .message-body {
+      position: relative;
+      z-index: 1;
+      font-size: 1.18rem;
+      line-height: 2.15;
+      color: #0f2b48;
+      font-weight: 700;
+      text-align: justify;
+    }
+
+    .sparkle-icon {
+      display: inline-block;
+      margin-right: 4px;
+      font-size: 1.25rem;
+    }
+
+    /* الشارة الجانبية (Great Job!) */
+    .image-side {
+      width: 220px;
+      background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      flex-shrink: 0;
+      border-left: 1px solid #fed7aa;
+    }
+
+    .badge-container {
+      width: 140px;
+      height: 140px;
+      filter: drop-shadow(0 10px 15px rgba(234, 88, 12, 0.2));
+      transition: transform 0.3s ease;
+    }
+
+    .badge-container:hover {
+      transform: scale(1.05) rotate(2deg);
+    }
+
+    @media (max-width: 768px) {
+      .envelope-wrapper {
+        height: 270px;
+      }
+      .card-content-layout {
+        flex-direction: column-reverse;
+      }
+      .image-side {
+        width: 100%;
+        padding: 20px;
+      }
+      .badge-container {
+        width: 110px;
+        height: 110px;
+      }
+      .text-side {
+        padding: 25px 20px;
+      }
+      .message-body {
+        font-size: 1.05rem;
+        line-height: 1.95;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="stars-bg"></div>
+
+  <div class="container">
+    <div class="envelope-wrapper" id="envelope" onclick="openEnvelope()">
+      <div class="envelope-flap-top"></div>
+      <div class="envelope-pocket"></div>
+      <div class="wax-seal">
+        <span class="seal-text">Anas</span>
+      </div>
+    </div>
+
+    <div class="letter-card" id="letter">
+      <div class="card-content-layout">
+        <div class="text-side">
+          <p class="message-body">
+باشمهندس إسلام يعني لسه متعاملناش بشكل كبير مع بعض بس إن شاء الله الخطوات الجايه تكون أحسن و لكن ال لفت نظري ان هدف حضرتك الاول انك تكون بتفيد الناس ال معاك و تزكي عن علمك و بتدور ازاي تعمل ده ف حقيقي ربنا يباركلك و ينفع بيك و بالتوفيق في الميد ترم إن شاء الله ✨        </div>
+
+        <div class="image-side">
+          <div class="badge-container">
+            <svg viewBox="0 0 200 200" width="100%" height="100%">
+              <path d="M75,135 L50,190 L75,175 L100,190 L88,135 Z" fill="#06b6d4" />
+              <path d="M125,135 L100,190 L125,175 L150,190 L138,135 Z" fill="#0891b2" />
+              <circle cx="100" cy="90" r="65" fill="#ea580c" />
+              <circle cx="100" cy="90" r="58" fill="#f97316" />
+              <circle cx="100" cy="90" r="50" fill="#fbbf24" />
+              <text x="100" y="80" text-anchor="middle" fill="#0f172a" font-family="'Cairo', sans-serif" font-weight="900" font-size="22">GREAT</text>
+              <text x="100" y="108" text-anchor="middle" fill="#0f172a" font-family="'Cairo', sans-serif" font-weight="900" font-size="26">JOB!</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openEnvelope() {
+      const envelope = document.getElementById('envelope');
+      const letter = document.getElementById('letter');
+
+      envelope.classList.add('hide');
+      
+      setTimeout(() => {
+        letter.classList.add('show');
+      }, 300);
+    }
+  </script>
+</body>
+</html>
